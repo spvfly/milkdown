@@ -19,10 +19,16 @@ export const link = createMark((_, utils) => {
             cursor: pointer;
             transition: all 0.4s ease-in-out;
             font-weight: 500;
+            position: 'relative';
             &:hover {
                 background-color: ${lineColor};
                 box-shadow: 0 0.2rem ${lineColor}, 0 -0.2rem ${lineColor};
             }
+        `;
+    });
+    const inputStyle = utils.getStyle(() => {
+        return css`
+            position: 'absolute';
         `;
     });
     return {
@@ -119,5 +125,27 @@ export const link = createMark((_, utils) => {
                 return tr;
             }),
         ],
+        view: (_editor, _nodeType, mark) => {
+            const dom = document.createElement('a');
+            dom.href = mark.attrs.href;
+            dom.title = mark.attrs.title;
+            const className = utils.getClassName(mark.attrs, id, style);
+            if (className) {
+                dom.className = className;
+            }
+            const input = document.createElement('input');
+            if (inputStyle) {
+                input.classList.add(inputStyle);
+            }
+            dom.append(input);
+
+            return {
+                dom,
+                update: () => {
+                    dom.append(input);
+                    return true;
+                },
+            };
+        },
     };
 });
